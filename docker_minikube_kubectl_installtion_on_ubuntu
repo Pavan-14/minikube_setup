@@ -1,0 +1,143 @@
+# add user with root privileges in ubuntu
+===========================================
+1. create user
+sudo su
+adduser miniuser
+
+2. Add the new user to the sudo group to give them root privileges. For example:
+usermod -aG sudo miniuser
+
+3. Log out of the root account using the exit command
+exit
+
+4. Log in as the newly created user using the credentials
+
+
+
+# docker installation on ubuntu 22.04 #
+===============================================================
+1. sudo apt update
+
+2. Install dependencies
+sudo apt install apt-transport-https curl gnupg-agent ca-certificates software-properties-common -y
+
+3. Install Docker on Ubuntu 22.04
+ we will add the GPGK key
+ ========================
+ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+ 
+ Since Ubuntu 22.04 is yet to be officially released, add the repository for Ubuntu 20.04 Stable
+ ================================================================================================
+ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+ 
+ With the GPG key and the repository added, run the following command to install Docker and associated packages
+ ===============================================================================================================
+ sudo apt install docker-ce docker-ce-cli containerd.io -y
+ 
+ 
+ Once the command runs successfully, consider adding the currently logged-in user to the docker group. This allows you to run docker without invoking sudo
+ ===========================================================================================================================================================
+ sudo usermod -aG docker $USER
+ newgrp docker
+ 
+4. Confirm that Docker is installed
+sudo docker version
+
+5. Manage Docker Service
+ sudo systemctl status docker
+ 
+ If, for any reason, Docker is not running, simply execute the following command:
+ =================================================================================
+ sudo systemctl start docker
+ 
+ To enable Docker to start automatically every time on system startup, run the command:
+ =======================================================================================
+ sudo systemctl enable docker
+ 
+ To restart Docker  run:
+ ========================
+ sudo systemctl restart docker
+
+5. Test Docker
+ docker run hello-world
+ To confirm the images on the system, run the command:
+ ======================================================
+ docker images
+ 
+ 
+ 
+# install minikube on Ubuntu 22.04
+=====================================
+
+1. To install the latest minikube stable release on x86-64 Linux using binary download:
+
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+
+2. start minikune
+
+ minikube start
+ or
+ minikube start --vm-driver=docker 
+
+ (optional)
+ minikube config set driver docker
+
+
+3. Manage your cluster
+	Pause Kubernetes without impacting deployed applications:
+	=========================================================
+	minikube pause
+	
+	Unpause a paused instance:
+	===========================
+	minikube unpause
+	
+	Halt the cluster:
+	==================
+	minikube stop
+	
+	Change the default memory limit (requires a restart):
+	======================================================
+	minikube config set memory 9001
+	
+	Browse the catalog of easily installed Kubernetes services:
+	============================================================
+	minikube addons list
+	
+	Delete all of the minikube clusters:
+	====================================
+	minikube delete --all
+	
+	
+	
+# install kubectl
+===================
+
+1. Download the latest release with the command:
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+2. Validate the binary (optional)
+	Download the kubectl checksum file:
+	curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+	
+	Validate the kubectl binary against the checksum file:
+	echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+	
+	If valid, the output is:
+	ok
+	
+3. Install kubectl
+	sudo install -o miniuser -g miniuser -m 0755 kubectl /usr/local/bin/kubectl
+
+4. Test to ensure the version you installed is up-to-date:
+
+
+
+5. Check that kubectl is properly configured by getting the cluster state:
+	kubectl cluster-info
+	
+6. If kubectl cluster-info returns the url response but you can't access your cluster, to check whether it is configured properly, use:
+	
+	kubectl cluster-info dump
